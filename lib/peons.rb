@@ -15,7 +15,7 @@ module Peons
       rescue Exception => e
         fail(e, item)
       ensure
-        backup.lrem 1, item
+        backup.del
       end
     end
 
@@ -28,7 +28,7 @@ module Peons
     end
 
     def backup
-      self[:backup]
+      self[Process.pid][:backup]
     end
 
     def errors
@@ -49,7 +49,7 @@ module Peons
   end
 
   def self.[](key)
-    Queue.new(key, redis)
+    Queue.new(:peons, redis)[key]
   end
 
   def self.redis

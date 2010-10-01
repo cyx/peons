@@ -97,3 +97,9 @@ test "looping against the queue" do |q|
   assert 0 == q.errors.llen
 end
 
+test "all queues are namespaced" do
+  assert "peons:foo" == Peons[:foo] 
+  assert "peons:bar" == Peons[:bar] 
+  assert "peons:baz" == Peons[:baz] 
+end
+
