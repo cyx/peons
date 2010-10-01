@@ -30,6 +30,7 @@ test "popping from a queue with one element" do |q|
   end
 
   assert "1" == popped
+  assert 0 == q.llen
   assert 0 == q.backup.llen
 end
 
@@ -44,6 +45,7 @@ test "popping from a queue with two distinct elements" do |q|
   end
 
   assert "1" == popped
+  assert 1 == q.llen
   assert 0 == q.backup.llen
 end
 
@@ -58,6 +60,7 @@ test "popping from a queue with two equal elements" do |q|
   end
 
   assert "1" == popped
+  assert 1 == q.llen
   assert 0 == q.backup.llen
 end
 
@@ -71,7 +74,6 @@ test "popping and producing an error inside the block" do |q|
   
   assert 1 == q.llen
   assert 0 == q.backup.llen
-
   assert 1 == q.errors.llen
   
   assert q.errors.lrange(0, -1).grep(/1 => #<RuntimeError: Fabrication>/).any?
@@ -89,5 +91,9 @@ test "looping against the queue" do |q|
   end
   
   assert ["1", "2", "3"] == output
+
+  assert 0 == q.llen
+  assert 0 == q.backup.llen
+  assert 0 == q.errors.llen
 end
 
