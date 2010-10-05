@@ -1,0 +1,128 @@
+#! /usr/bin/env ruby
+# encoding: UTF-8
+
+require "thor"
+require File.expand_path("../lib/peons", File.dirname(__FILE__))
+
+class Peons::CLI < Thor
+  namespace :peons
+
+  PREFIX = "peons"
+
+  desc "summary", "Show a quick summary of all your peons."
+  def summary
+    h1 "Peons Reporting: Work work"
+    h2 "Total: %d" % queues.size
+
+    queues.each do |key|
+      h2 "%s (%d)" % [key, key.llen]
+
+      say "- backup: %d" % total_backups(key)
+      say "- errors: %d" % key[:errors].llen
+    end
+
+    say "\n" * 2
+  end
+
+  desc "show QUEUE_NAME", "Show the details of a given queue."
+  def show(queue)
+    key = ns(PREFIX)[queue]
+
+    h1 "%s (%d)" % [key, key.llen]
+
+    backups(key) do |backup|
+      h2 backup
+
+      ns(backup).lrange(0, -1).each_with_index do |val, idx|
+        say "%2d. %s" % [idx+1, val]
+      end
+    end
+
+    h2 "%s (displaying first 10)" % key[:errors]
+
+    key[:errors].lrange(0, 10).each_with_index do |error, idx|
+      say "%2d. %s" % [idx+1, error]
+    end
+  end
+
+  desc "harvest QUEUE_NAME", "Harvest all backups and merge them back."
+  def harvest(queue)
+    key = ns(PREFIX)[queue]
+
+    h1 "Harvesting: %s" % key
+
+    backups(key) do |backup|
+      h2 "Processing: %s" % backup
+
+      bak = ns(backup)
+
+      loop do
+        bak.rpoplpush(key)
+
+        break if bak.llen.zero?
+      end
+
+      say "- Cleaning up..."
+      bak.del
+      say "- Done!"
+      say
+    end
+  end
+
+  desc "pristine QUEUE_NAME", "Clear all errors for a given queue."
+  def pristine(queue)
+    key = ns(PREFIX)[queue]
+
+    h1 "Clearing Errors: %s" % key
+
+    response = ask("Are you sure? (y/N)")
+
+    if response.downcase.strip == "y"
+      say
+      say "- Clearing %d errors." % key[:errors].llen
+      key[:errors].del
+      say "- Done!"
+      say
+    end
+  end
+
+private
+  def h1(str)
+    puts
+    puts str
+    puts "=" * str.size
+  end
+
+  def h2(str)
+    puts
+    puts str
+    puts "-" * str.size
+  end
+
+  def redis
+    Peons.redis
+  end
+
+  def ns(key)
+    Nest.new(key, redis)
+  end
+
+  def queues
+    redis.keys(ns(PREFIX)["*"]).
+      reject  { |key| key.end_with?(":backup") or key.end_with?(":errors") }.
+      map     { |key| Nest.new(key, redis) }
+  end
+
+  def backups(key)
+    redis.keys(key["*"][:backup]).each { |e| yield e }
+  end
+
+  def total_backups(key)
+    redis.keys(key["*"][:backup]).inject(0) do |acc, key|
+      acc + redis.llen(key)
+    end
+  end
+end
+
+Peons::CLI.start
+
