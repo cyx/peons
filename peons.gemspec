@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = 'peons'
-  s.version = "0.0.2"
+  s.version = "0.0.3"
   s.summary = %{Hard working queues on top of Redis}
   s.date = "2010-10-05"
   s.author = "Cyril David"
