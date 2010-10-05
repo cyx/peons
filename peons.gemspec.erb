@@ -11,12 +11,20 @@ Gem::Specification.new do |s|
 
   s.specification_version = 2 if s.respond_to? :specification_version=
 
-  s.files = <%= Dir['bin/peons', 'lib/**/*.rb', 'README*', 'LICENSE', 'Rakefile', 'test/**/*.*'].inspect %>
+  s.files = <%= Dir[
+    "lib/**/*.rb",
+    "README*",
+    "LICENSE",
+    "Rakefile",
+    "test/**/*.*"
+  ].inspect %>
 
   s.require_paths = ['lib']
-  
+
   s.add_dependency "redis"
   s.add_dependency "nest"
   s.add_development_dependency "cutest"
   s.has_rdoc = false
+  s.executables.push "peons"
 end
+

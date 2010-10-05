@@ -2,8 +2,8 @@ require "redis"
 require "nest"
 
 module Peons
-  VERSION = "0.0.4"
-  
+  VERSION = "0.0.5"
+
   class Queue < Nest
     alias :push :lpush
 
