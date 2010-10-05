@@ -2,7 +2,7 @@ require "redis"
 require "nest"
 
 module Peons
-  VERSION = "0.0.1"
+  VERSION = "0.0.2"
   
   class Queue < Nest
     alias :push :lpush
@@ -53,7 +53,7 @@ module Peons
   end
 
   def self.redis
-    threaded[:redis] ||= Redis.new
+    threaded[:redis] ||= Redis.connect
   end
 
   def self.redis=(redis)

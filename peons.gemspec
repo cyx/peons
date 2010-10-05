@@ -1,15 +1,15 @@
 Gem::Specification.new do |s|
   s.name = 'peons'
-  s.version = "0.0.1"
+  s.version = "0.0.2"
   s.summary = %{Hard working queues on top of Redis}
-  s.date = %q{2010-10-1}
+  s.date = "2010-10-05"
   s.author = "Cyril David"
   s.email = "cyx.ucron@gmail.com"
   s.homepage = "http://github.com/cyx/peons"
 
   s.specification_version = 2 if s.respond_to? :specification_version=
 
-  s.files = ["lib/peons.rb", "Rakefile", "test/helper.rb", "test/peons_test.rb"]
+  s.files = ["lib/peons.rb", "README.markdown", "LICENSE", "Rakefile", "test/helper.rb", "test/peons_test.rb"]
 
   s.require_paths = ['lib']
   

@@ -1,9 +1,10 @@
 <%- require "./lib/peons" -%>
+<%- require "date" -%>
 Gem::Specification.new do |s|
   s.name = 'peons'
   s.version = "<%= Peons::VERSION %>"
   s.summary = %{Hard working queues on top of Redis}
-  s.date = %q{2010-10-1}
+  s.date = "<%= Date.today.to_s %>"
   s.author = "Cyril David"
   s.email = "cyx.ucron@gmail.com"
   s.homepage = "http://github.com/cyx/peons"
